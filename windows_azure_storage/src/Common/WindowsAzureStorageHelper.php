@@ -77,6 +77,26 @@ class WindowsAzureStorageHelper{
   }
   
   /**
+   * Helper function to check is it exist in DB.
+   *
+   * @param string $url, check by url.
+   * @return false mean it's not exist.
+   * @return true mean is exist.
+   */
+  public function isExistByUrl($url) {
+      $query = db_select('windows_azure_storage_file', 'azure_file')->extend('Drupal\Core\Database\Query\PagerSelectExtender')->element(0);
+      $query->fields('azure_file', array('id', 'container', 'folder', 'name' ,'url'));
+      $result = $query
+        ->orderBy('azure_file.id')
+        ->condition('azure_file.url',$url,'=')
+        ->execute();
+      if($row=$result->fetchAssoc()){
+        return true;
+      }
+      return false;
+  }
+  
+  /**
    * Helper function to download the blob.
    * 
    * @param string $container
@@ -168,7 +188,7 @@ class WindowsAzureStorageHelper{
       return false;
     }
   }
-  
+   
   /**
    * Helper function to get list the containers in account.
    */

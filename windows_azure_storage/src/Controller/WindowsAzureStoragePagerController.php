@@ -10,12 +10,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 
 class WindowsAzureStoragePagerController extends ControllerBase {
-  function getArrayUniqueByKeys($arr,$key){
-    $res = array();
-   
-    
-    return $res;
-  }
 	
   public function queryParameters() {
     $header = array(
@@ -26,25 +20,12 @@ class WindowsAzureStoragePagerController extends ControllerBase {
   	);
     $query = db_select('windows_azure_storage_file', 'azure_file')->extend('Drupal\Core\Database\Query\PagerSelectExtender')->element(0);
     $query->fields('azure_file', array('id', 'container', 'folder', 'name' ,'url'));
-    $query = $query      
+    $result = $query
+      ->limit(5)
       ->orderBy('azure_file.id')
       ->execute();
-    
     $rows = array();
-    $result = array();
-    # get all records
-    while ($row = $query->fetchAssoc()){$complicateresult[] = $row;};
-    # remove duplicate URL records
-    $key='url';
-    foreach($complicateresult as $value){
-        if(isset($result[$value[$key]])){
-            unset($value[$key]);
-        }
-        else{
-            $result[$value[$key]] = $value;
-        }
-    }
-    foreach ( $result as $row) {      
+    while ($row = $result->fetchAssoc()) {
       $rows[] = array(
         'data' => array(
           $row['folder'],
@@ -54,7 +35,7 @@ class WindowsAzureStoragePagerController extends ControllerBase {
         )
       );
     }
-   
+    
 	  $build['pager_table_azure'] = array(
       '#theme' => 'table',
       '#header' => $header,

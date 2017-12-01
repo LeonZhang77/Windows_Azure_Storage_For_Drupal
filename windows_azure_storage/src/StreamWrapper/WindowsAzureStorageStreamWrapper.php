@@ -373,7 +373,17 @@ class WindowsAzureStorageStreamWrapper implements StreamWrapperInterface{
       if(!$azure_storage_helper->uploadBlob($azure_storage_helper->container_name, $this->getFileName($this->uri), $content)){
       	return FALSE;
       }
-      $azure_storage_helper->insertDB($azure_storage_helper->container_name, explode('/', $this->getFileName($this->uri))[0], explode('/', $this->getFileName($this->uri))[1], $this->getRealExternalUrl());
+      //if it's not exist in DB, insert one record.
+      $container= $azure_storage_helper->container_name;
+      $folder= explode('/', $this->getFileName($this->uri))[0];
+      $name= explode('/', $this->getFileName($this->uri))[1];
+      $url= $this->getRealExternalUrl();
+      if($azure_storage_helper->isExistByUrl($url)){
+          
+      }
+      else{
+          $azure_storage_helper->insertDB($container, $folder, $name, $url);            
+      }      
     }
     $this->cleanup();
     return $result;
